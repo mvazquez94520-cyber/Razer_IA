@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Razer Blade 16 &amp; Core X V2 — Solutions IA</title>
+<title>Razer Blade 16, Core X V2 &amp; accessoires — Solutions IA</title>
 <style>
 :root{--g:#44d62c;--bg:#0b0d0c;--p:#141716;--p2:#1b1f1d;--b:#2a302d;--t:#eef2ef;--m:#9aa5a0}
 *{box-sizing:border-box;margin:0;padding:0}
@@ -12,7 +12,7 @@ body{background:var(--bg);color:var(--t);font:16px/1.5 system-ui,-apple-system,"
 header{display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:12px;padding-bottom:18px;border-bottom:1px solid var(--b)}
 h1{font-size:28px;letter-spacing:.5px}h1 span{color:var(--g)}
 .sub{color:var(--m);font-size:14px}
-.tabs{display:flex;gap:8px;margin:22px 0 18px}
+.tabs{display:flex;gap:8px;margin:22px 0 18px;flex-wrap:wrap}
 .tab{background:var(--p);border:1px solid var(--b);color:var(--m);padding:10px 20px;border-radius:8px;cursor:pointer;font-size:15px;font-weight:600}
 .tab.on{border-color:var(--g);color:var(--t);box-shadow:0 0 0 1px var(--g) inset}
 .cards{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px}
@@ -63,12 +63,15 @@ footer{margin-top:28px;color:var(--m);font-size:12px;border-top:1px solid var(--
 <body>
 <div class="wrap">
 <header>
-  <div><h1><span>RAZER</span> pour l'IA</h1><div class="sub">Razer Blade 16 (2026) &amp; Core X V2</div></div>
+  <div><h1><span>RAZER</span> pour l'IA</h1><div class="sub">Razer Blade 16 (2026), Core X V2 &amp; accessoires</div></div>
   <div class="sub">Cliquez sur une référence pour afficher le détail</div>
 </header>
 <div class="tabs">
   <button class="tab on" data-v="blade">Razer Blade 16 — IA locale</button>
   <button class="tab" data-v="core">Core X V2 — eGPU</button>
+  <button class="tab" data-v="tb5">Dock Thunderbolt 5</button>
+  <button class="tab" data-v="usb4">Dock USB 4</button>
+  <button class="tab" data-v="cool">Cooling Pad</button>
 </div>
 <div id="app"></div>
 <div id="cta" class="cta"></div>
@@ -101,8 +104,30 @@ const CORE={
  usages:[["Passer un portable existant à l'IA locale","Ajouter une carte graphique de bureau pour faire tourner des LLM en local ; la VRAM dépend de la carte choisie."],["Évolutif","La carte se change quand les besoins évoluent, sans remplacer le PC portable."],["Poste mixte nomade / bureau","Un seul câble : affichage, calcul GPU et charge du portable (jusqu'à 140 W)."],["Gaming &amp; création","Jeu, rendu 3D et montage avec une carte de bureau haut de gamme."]],
  note:"Vente complémentaire : carte graphique + alimentation ATX à fournir. Pour l'IA, privilégier une carte à forte VRAM."
 };
+
+const U="https://assets3.razerzone.com/";
+const PRODS={
+tb5:{name:"Razer Thunderbolt 5 Dock Chroma",sub:"Dock 10 ports avec emplacement M.2",ref:"RC21-02290100-R3EK",ean:"8887910053485",price:"449,99 €",
+ img:U+"gbZtYsfvkWwmSJormtPgjSSptU8=/1500x1000/https%3A%2F%2Fmedias-p1.phoenix.razer.com%2Fsys-master-phoenix-images-container%2Fh8a%2Fha6%2F9932979666974%2Fthunderbolt-5-dock-chroma-500x500.png",
+ kpis:[["80 Gbps","Bande passante"],["140 W","Charge hôte"],["3 × 4K","144 Hz"]],
+ specs:[["Référence","RC21-02290100-R3EK"],["EAN","8887910053485"],["Connexion hôte","Thunderbolt 5 (80 Gbps bidirectionnel, jusqu'à 120 Gbps en mode Bandwidth Boost)"],["Ports","10 ports + emplacement M.2 : Thunderbolt 5, USB-C 3.2 Gen 2 ×1, USB-A 3.2 Gen 2 ×2, Ethernet Gigabit, lecteur SD UHS-II, jack 3,5 mm combo"],["Affichage","Jusqu'à 3 écrans 4K 144 Hz ou 1 écran 8K 60 Hz"],["Charge de l'hôte","Jusqu'à 140 W (alimentation 250 W)"],["Stockage M.2","PCIe Gen 4, jusqu'à 8 To"],["Dimensions / poids","205 × 85 × 30 mm / 524 g"],["Châssis","Aluminium, éclairage Razer Chroma RGB"],["Compatibilité","Windows et Mac"],["Garantie","2 ans"]],
+ usages:[["Poste de travail complet en un câble","Écrans, périphériques, réseau et stockage reliés à un seul dock."],["Multi-écrans","Jusqu'à trois écrans 4K 144 Hz depuis un seul port Thunderbolt 5."],["Stockage rapide intégré","Emplacement M.2 PCIe Gen 4 pour des fichiers volumineux sans disque externe."],["Complément du Blade 16","Le Blade 16 dispose de ports Thunderbolt 5 : charge jusqu'à 140 W et extension de connectique."]],
+ note:"Détail des ports et du Bandwidth Boost : à valider sur la fiche produit Razer. Alimentation incluse (250 W)."},
+usb4:{name:"Razer USB 4 Dock",sub:"Dock USB 4 à 14 ports pour deux écrans",ref:"RC21-02280100-R3EK",ean:"8887910053324",price:"249,99 €",
+ img:U+"y9aPjb6v_bypyESyy9Q12_rJ7XI=/1500x1000/https%3A%2F%2Fmedias-p1.phoenix.razer.com%2Fsys-master-phoenix-images-container%2Fh46%2Fh2e%2F9838183776286%2Fusb-4-dock-black-500x500.png",
+ kpis:[["14","Ports"],["40 Gbps","USB 4"],["100 W","Charge hôte"]],
+ specs:[["Référence","RC21-02280100-R3EK"],["EAN","8887910053324"],["Connexion hôte","USB 4 (USB-C), jusqu'à 40 Gbps"],["Ports","14 ports : HDMI 2.1, DisplayPort 1.4, USB-C et USB-A, Ethernet Gigabit, lecteur SD / microSD, jack 3,5 mm combo"],["Affichage","Deux écrans : un en 4K 120 Hz et un en 4K 60 Hz"],["Charge de l'hôte","Jusqu'à 100 W (adaptateur 180 W inclus)"],["Dimensions / poids","21,5 × 80 × 190 mm / 425 g"],["Compatibilité","Windows et macOS"],["Garantie","2 ans"]],
+ usages:[["Poste hybride simple","Un seul câble USB 4 pour deux écrans, la connectique et la charge du portable."],["Double écran","Deux écrans 4K via HDMI 2.1 et DisplayPort 1.4."],["Entrée de gamme dock","Alternative plus accessible au dock Thunderbolt 5, pour les flottes de portables."]],
+ note:"Le détail de la répartition des ports USB-C / USB-A est à valider sur la fiche produit Razer."},
+cool:{name:"Razer Laptop Cooling Pad",sub:"Support de refroidissement intelligent pour portables de 14″ à 18″",ref:"RC21-02300100-R3GW",ean:"8887910053201",price:"149,99 €",
+ img:U+"5JYgJ4dI4def6wWrz6OTb1jiQ1s=/1500x1000/https%3A%2F%2Fmedias-p1.phoenix.razer.com%2Fsys-master-phoenix-images-container%2Fh30%2Fhe1%2F9819467579422%2Flaptop-cooling-pad-500x500.png",
+ kpis:[["14–18″","Portables compatibles"],["140 mm","Ventilateur"],["3","Ports USB-A"]],
+ specs:[["Référence","RC21-02300100-R3GW"],["EAN","8887910053201"],["Compatibilité","Ordinateurs portables de 14″ à 18″"],["Refroidissement","Ventilateur 140 mm, vitesse ajustée automatiquement selon la température, chambre de pression hermétique"],["Étanchéité","Joints en mousse à mémoire de forme, magnétiques"],["Hub USB","3 ports USB-A 2.0"],["Connexion","USB-A (câble 0,5 m)"],["Alimentation","Adaptateur 12 V / 3 A (36 W)"],["Logiciel","Razer Synapse : courbes de ventilation, vitesse, éclairage"],["Éclairage","Bouton RGB, effets Chroma"],["Dimensions / poids","39,6 × 29,2 × 11,4 cm / 1,6 kg"],["Garantie","2 ans"]],
+ usages:[["Performances stables en charge","Régulation automatique de la ventilation pour les usages prolongés (rendu, compilation, modèles IA locaux)."],["Compatible avec le Blade 16","Convient aux portables de 14″ à 18″."],["Connectique en plus","Hub USB 3 ports intégré au support."]],
+ note:"Les gains de température varient selon le portable et l'usage."}
+};
 let view="blade",sel=0,sub="spec";
-(function(){const p=new URLSearchParams(location.search).get("p");if(p==="core")view="core";else if(/^blade[0-3]$/.test(p||"")){view="blade";sel=+p.slice(5)}})();
+(function(){const p=new URLSearchParams(location.search).get("p");if(p==="core"||PRODS[p])view=p;else if(/^blade[0-3]$/.test(p||"")){view="blade";sel=+p.slice(5)}})();
 const $=s=>document.querySelector(s);
 const rows=a=>a.map(r=>`<tr><td>${r[0]}</td><td>${r[1]}</td></tr>`).join("");
 const bar=(l,v,max,u)=>`<div class="bar"><span>${l}</span><div class="track"><div class="fill" style="width:${v/max*100}%"></div></div><span>${v} ${u}</span></div>`;
@@ -118,6 +143,12 @@ function render(){
   <div class="bars">${bar("VRAM",b.vram,24,"Go")}${bar("RAM",b.ram,64,"Go")}${bar("SSD",b.ssd,2,"To")}</div></div>
   <div class="box"><div class="st"><button data-s="spec" class="${sub==="spec"?"on":""}">Caractéristiques</button><button data-s="use" class="${sub==="use"?"on":""}">Usages IA &amp; PC</button></div>
   ${sub==="spec"?`<table>${rows(specs)}</table>`:`<p style="margin-bottom:8px;color:var(--m)">${b.tagline}</p><ul>${b.usages.map(u=>`<li><b>${u[0]}</b><span>${u[1]}</span></li>`).join("")}</ul><div class="note">${b.note}</div>`}</div></div>`;
+ } else if(PRODS[view]){
+  const P=PRODS[view];
+  h+=`<div class="detail core"><div class="box"><div class="imgbox"><img src="${P.img}" alt="${P.name}" referrerpolicy="no-referrer" onerror="this.closest('.imgbox').style.display='none'"></div><h2>${P.name}</h2><div class="ref">${P.sub}<br>${P.ref} · EAN ${P.ean}</div><div class="price">${P.price}</div>
+  <div class="kpis">${P.kpis.map(k=>`<div class="kpi"><b>${k[0]}</b><small>${k[1]}</small></div>`).join("")}</div></div>
+  <div class="box"><div class="st"><button data-s="spec" class="${sub==="spec"?"on":""}">Caractéristiques</button><button data-s="use" class="${sub==="use"?"on":""}">Usages</button></div>
+  ${sub==="spec"?`<table>${rows(P.specs)}</table>`:`<ul>${P.usages.map(u=>`<li><b>${u[0]}</b><span>${u[1]}</span></li>`).join("")}</ul><div class="note">${P.note}</div>`}</div></div>`;
  } else {
   h+=`<div class="detail core"><div class="box"><div class="imgbox"><img src="${IMG.core}" alt="Razer Core X V2"></div><h2>${CORE.name}</h2><div class="ref">${CORE.sub}</div>
   <div class="kpis">${CORE.kpis.map(k=>`<div class="kpi"><b>${k[0]}</b><small>${k[1]}</small></div>`).join("")}</div></div>
@@ -130,7 +161,7 @@ function render(){
 const CONTACT="manuel.vazquez@razer.com";
 const SRC=new URLSearchParams(location.search).get("src")||"direct";
 function renderCta(){
- const lbl=view==="blade"?"Razer Blade 16 "+BLADES[sel].gpu+" "+BLADES[sel].ram+" Go ("+BLADES[sel].ref+")":"Razer Core X V2";
+ const lbl=view==="blade"?"Razer Blade 16 "+BLADES[sel].gpu+" "+BLADES[sel].ram+" Go ("+BLADES[sel].ref+")":PRODS[view]?PRODS[view].name+" ("+PRODS[view].ref+")":"Razer Core X V2";
  const subj=encodeURIComponent("Demande de devis / démo — "+lbl);
  const body=encodeURIComponent("Bonjour,\n\nJe souhaite recevoir un devis ou une démonstration pour : "+lbl+".\n\nSociété :\nQuantité estimée :\nTéléphone :\n\n(source : "+SRC+")");
  $("#cta").innerHTML=`<p><b>${lbl}</b><br>Devis, tarif revendeur ou démonstration : réponse directe de Razer EMEA.</p><a href="mailto:${CONTACT}?subject=${subj}&body=${body}">Demander un devis / une démo</a>`;
