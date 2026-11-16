@@ -51,6 +51,10 @@ li{padding:9px 0 9px 22px;border-bottom:1px solid var(--b);position:relative;fon
 li:before{content:"";position:absolute;left:2px;top:16px;width:8px;height:8px;background:var(--g);border-radius:2px}
 li b{display:block}li span{color:var(--m);font-size:13.5px}
 .note{margin-top:14px;padding:10px 12px;border-left:3px solid var(--g);background:var(--p2);font-size:13px;color:var(--m);border-radius:0 8px 8px 0}
+.cta{margin-top:20px;display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;background:var(--p);border:1px solid var(--g);border-radius:14px;padding:16px 20px}
+.cta p{color:var(--m);font-size:14px}.cta p b{color:var(--t)}
+.cta a{background:var(--g);color:#000;font-weight:800;text-decoration:none;padding:12px 22px;border-radius:10px;font-size:15px}
+.cta a:hover{filter:brightness(1.1)}
 footer{margin-top:28px;color:var(--m);font-size:12px;border-top:1px solid var(--b);padding-top:14px}
 @media(max-width:900px){.cards{grid-template-columns:1fr 1fr}.detail{grid-template-columns:1fr}}
 @media(max-width:480px){.cards{grid-template-columns:1fr}h1{font-size:22px}}
@@ -67,6 +71,7 @@ footer{margin-top:28px;color:var(--m);font-size:12px;border-top:1px solid var(--
   <button class="tab" data-v="core">Core X V2 — eGPU</button>
 </div>
 <div id="app"></div>
+<div id="cta" class="cta"></div>
 <footer>Spécifications : fiches Razer France (razer.com/fr-fr) et fiches revendeurs. Prix publics indiqués par Razer EMEA. Les capacités IA (tailles de modèles) sont des ordres de grandeur en quantification 4 bits, à valider selon l'outil et le modèle utilisés. Photos non contractuelles.</footer>
 </div>
 <script>
@@ -97,6 +102,7 @@ const CORE={
  note:"Vente complémentaire : carte graphique + alimentation ATX à fournir. Pour l'IA, privilégier une carte à forte VRAM."
 };
 let view="blade",sel=0,sub="spec";
+(function(){const p=new URLSearchParams(location.search).get("p");if(p==="core")view="core";else if(/^blade[0-3]$/.test(p||"")){view="blade";sel=+p.slice(5)}})();
 const $=s=>document.querySelector(s);
 const rows=a=>a.map(r=>`<tr><td>${r[0]}</td><td>${r[1]}</td></tr>`).join("");
 const bar=(l,v,max,u)=>`<div class="bar"><span>${l}</span><div class="track"><div class="fill" style="width:${v/max*100}%"></div></div><span>${v} ${u}</span></div>`;
@@ -119,6 +125,15 @@ function render(){
   ${sub==="spec"?`<table>${rows(CORE.specs)}</table>`:`<ul>${CORE.usages.map(u=>`<li><b>${u[0]}</b><span>${u[1]}</span></li>`).join("")}</ul><div class="note">${CORE.note}</div>`}</div></div>`;
  }
  $("#app").innerHTML=h;
+ renderCta();
+}
+const CONTACT="manuel.vazquez@razer.com";
+const SRC=new URLSearchParams(location.search).get("src")||"direct";
+function renderCta(){
+ const lbl=view==="blade"?"Razer Blade 16 "+BLADES[sel].gpu+" "+BLADES[sel].ram+" Go ("+BLADES[sel].ref+")":"Razer Core X V2";
+ const subj=encodeURIComponent("Demande de devis / démo — "+lbl);
+ const body=encodeURIComponent("Bonjour,\n\nJe souhaite recevoir un devis ou une démonstration pour : "+lbl+".\n\nSociété :\nQuantité estimée :\nTéléphone :\n\n(source : "+SRC+")");
+ $("#cta").innerHTML=`<p><b>${lbl}</b><br>Devis, tarif revendeur ou démonstration : réponse directe de Razer EMEA.</p><a href="mailto:${CONTACT}?subject=${subj}&body=${body}">Demander un devis / une démo</a>`;
 }
 document.addEventListener("click",e=>{
  const t=e.target.closest(".tab,.card,.st button");if(!t)return;
