@@ -51,6 +51,11 @@ li{padding:9px 0 9px 22px;border-bottom:1px solid var(--b);position:relative;fon
 li:before{content:"";position:absolute;left:2px;top:16px;width:8px;height:8px;background:var(--g);border-radius:2px}
 li b{display:block}li span{color:var(--m);font-size:13.5px}
 .note{margin-top:14px;padding:10px 12px;border-left:3px solid var(--g);background:var(--p2);font-size:13px;color:var(--m);border-radius:0 8px 8px 0}
+.card .cl{color:var(--g);font-size:12px;font-weight:600;margin-top:4px}
+.llm{background:var(--p2);border:1px solid var(--b);border-radius:10px;padding:12px 14px;margin-bottom:12px}
+.llm .tag{font-size:11px;color:var(--g);font-weight:700;letter-spacing:1px;text-transform:uppercase}
+.llmn{display:block;font-size:19px;margin-top:4px}.llmq{color:var(--m);font-size:13px}
+.llmw{color:var(--m);font-size:13.5px;margin:6px 0}
 footer{margin-top:28px;color:var(--m);font-size:12px;border-top:1px solid var(--b);padding-top:14px}
 @media(max-width:900px){.cards{grid-template-columns:1fr 1fr}.detail{grid-template-columns:1fr}}
 @media(max-width:480px){.cards{grid-template-columns:1fr}h1{font-size:22px}}
@@ -96,6 +101,20 @@ const CORE={
  usages:[["Passer un portable existant à l'IA locale","Ajouter une carte graphique de bureau pour faire tourner des LLM en local ; la VRAM dépend de la carte choisie."],["Évolutif","La carte se change quand les besoins évoluent, sans remplacer le PC portable."],["Poste mixte nomade / bureau","Un seul câble : affichage, calcul GPU et charge du portable (jusqu'à 140 W)."],["Gaming &amp; création","Jeu, rendu 3D et montage avec une carte de bureau haut de gamme."]],
  note:"Vente complémentaire : carte graphique + alimentation ATX à fournir. Pour l'IA, privilégier une carte à forte VRAM."
 };
+/* LLM locaux recommandés — source unique, indexée par VRAM (sources : vdf.ai 06/10/2026, computingforgeeks.com 14/11/2026) */
+const LLM_BY_VRAM={
+ 16:{best:["gpt-oss-20b (OpenAI)","MXFP4 · ~12,1 Go · contexte ~93K"],why:"Meilleur modèle généraliste qui tient entièrement dans 16 Go de VRAM.",
+  alts:[["Gemma 4 12B","Q8_0 · ~12,7 Go · qualité quasi native"],["Qwen3.5-9B","Q8_0 · ~9,5 Go · long contexte ~147K"]]},
+ 24:{best:["Qwen3.6-35B-A3B","Q4_K_M · ~20,4 Go · contexte ~54K"],why:"Modèle MoE (3B actifs) : qualité d'un ~35B avec une vitesse élevée.",
+  alts:[["Qwen3.8-27B","Q4_K_M · ~19,0 Go · modèle dense"],["Gemma 4 26B A4B","Q4_0 · ~14,6 Go · contexte 256K complet"],["Qwen3-Coder-30B","Spécialisé code / agents de développement"]]},
+ 32:{best:["Qwen3.6-35B-A3B","Q4_K_M · ~20,4 Go · contexte 256K complet"],why:"Même modèle que 24 Go, mais avec le contexte maximal.",
+  alts:[["Gemma 4 26B A4B","Q8_0 · ~26,9 Go · qualité quasi native"],["Qwen3.8-27B","Q4_K_M · ~19,0 Go · contexte ~148K"]]}
+};
+const RAM_NOTE={32:"32 Go de RAM : garder le modèle entièrement en VRAM pour des performances optimales.",
+ 64:"64 Go de RAM : permet en plus de charger un modèle plus gros que la VRAM en déport partiel CPU/RAM (vitesse nettement réduite, non mesurée sur cette machine)."};
+const CORE_GPUS=[["RTX 5080 / 5070 Ti / 4080","16 Go",16],["RTX 4090 / 3090","24 Go",24],["RTX 5090","32 Go",32]];
+const llmBlock=(v,title)=>{const m=LLM_BY_VRAM[v];return `<div class="llm"><div class="tag">${title}</div><b class="llmn">${m.best[0]}</b><div class="llmq">${m.best[1]}</div><p class="llmw">${m.why}</p><ul>${m.alts.map(a=>`<li><b>${a[0]}</b><span>${a[1]}</span></li>`).join("")}</ul></div>`};
+const LLM_FOOT=`<div class="note">Ordres de grandeur pour Ollama / LM Studio, modèle chargé entièrement en VRAM (~90 % de la VRAM utilisable). Sources : vdf.ai (oct. 2026), computingforgeeks.com (nov. 2026). Les débits réels sur GPU portable sont inférieurs à ceux d'un GPU de bureau.</div>`;
 let view="blade",sel=0,sub="spec";
 const $=s=>document.querySelector(s);
 const rows=a=>a.map(r=>`<tr><td>${r[0]}</td><td>${r[1]}</td></tr>`).join("");
@@ -104,19 +123,19 @@ function render(){
  document.querySelectorAll(".tab").forEach(t=>t.classList.toggle("on",t.dataset.v===view));
  let h="";
  if(view==="blade"){
-  h+=`<div class="cards">`+BLADES.map(b=>`<button class="card ${b.id===sel?"on":""}" data-i="${b.id}"><div class="tag">${b.tag}</div><div class="nm">${b.gpu}</div><div class="cf">${b.ram} Go RAM · ${b.ssd} To SSD</div><div class="pr">${b.price}</div><div class="rf">${b.ref}</div></button>`).join("")+`</div>`;
+  h+=`<div class="cards">`+BLADES.map(b=>`<button class="card ${b.id===sel?"on":""}" data-i="${b.id}"><div class="tag">${b.tag}</div><div class="nm">${b.gpu}</div><div class="cf">${b.ram} Go RAM · ${b.ssd} To SSD</div><div class="pr">${b.price}</div><div class="cl">LLM : ${LLM_BY_VRAM[b.vram].best[0]}</div><div class="rf">${b.ref}</div></button>`).join("")+`</div>`;
   const b=BLADES[sel];
   const specs=[["Référence",b.ref],["EAN",b.ean],["Processeur","Intel Core Ultra 9 386H (16 cœurs)"],["NPU","Jusqu'à 50 TOPS"],["Carte graphique",`NVIDIA GeForce ${b.gpu} Laptop — ${b.vram} Go GDDR7 (165 W TGP)`],["Mémoire",`${b.ram} Go LPDDR5X 9 600 MHz (soudée)`],["Stockage",`SSD ${b.ssd} To`],["Écran","16\" OLED QHD+ 2560×1600, 240 Hz, 0,2 ms, DisplayHDR True Black 1000"],["Luminosité","500 nits SDR / jusqu'à 1 100 nits HDR"],["Ports","Thunderbolt 5 et Thunderbolt 4"],["Audio","6 haut-parleurs, THX Spatial Audio+"],["Autonomie","Jusqu'à 13 h (bureautique)"],["Poids / épaisseur","2,1 kg / 14,9 mm"],["Système","Windows 11 Famille"]];
   h+=`<div class="detail"><div class="box"><div class="imgbox"><img src="${IMG.blade}" alt="Razer Blade 16"></div><h2>Razer Blade 16 — ${b.gpu}</h2><div class="ref">${b.ref} · ${b.ram} Go · ${b.ssd} To</div><div class="price">${b.price}</div>
   <div class="kpis"><div class="kpi"><b>${b.vram} Go</b><small>VRAM GPU</small></div><div class="kpi"><b>${b.ram} Go</b><small>RAM</small></div><div class="kpi"><b>${b.ssd} To</b><small>SSD</small></div></div>
   <div class="bars">${bar("VRAM",b.vram,24,"Go")}${bar("RAM",b.ram,64,"Go")}${bar("SSD",b.ssd,2,"To")}</div></div>
-  <div class="box"><div class="st"><button data-s="spec" class="${sub==="spec"?"on":""}">Caractéristiques</button><button data-s="use" class="${sub==="use"?"on":""}">Usages IA &amp; PC</button></div>
-  ${sub==="spec"?`<table>${rows(specs)}</table>`:`<p style="margin-bottom:8px;color:var(--m)">${b.tagline}</p><ul>${b.usages.map(u=>`<li><b>${u[0]}</b><span>${u[1]}</span></li>`).join("")}</ul><div class="note">${b.note}</div>`}</div></div>`;
+  <div class="box"><div class="st"><button data-s="spec" class="${sub==="spec"?"on":""}">Caractéristiques</button><button data-s="use" class="${sub==="use"?"on":""}">Usages IA &amp; PC</button><button data-s="llm" class="${sub==="llm"?"on":""}">LLM local</button></div>
+  ${sub==="llm"?llmBlock(b.vram,`Modèle optimal · ${b.vram} Go VRAM`)+`<div class="note">${RAM_NOTE[b.ram]}</div>`+LLM_FOOT:sub==="spec"?`<table>${rows(specs)}</table>`:`<p style="margin-bottom:8px;color:var(--m)">${b.tagline}</p><ul>${b.usages.map(u=>`<li><b>${u[0]}</b><span>${u[1]}</span></li>`).join("")}</ul><div class="note">${b.note}</div>`}</div></div>`;
  } else {
   h+=`<div class="detail core"><div class="box"><div class="imgbox"><img src="${IMG.core}" alt="Razer Core X V2"></div><h2>${CORE.name}</h2><div class="ref">${CORE.sub}</div>
   <div class="kpis">${CORE.kpis.map(k=>`<div class="kpi"><b>${k[0]}</b><small>${k[1]}</small></div>`).join("")}</div></div>
-  <div class="box"><div class="st"><button data-s="spec" class="${sub==="spec"?"on":""}">Caractéristiques</button><button data-s="use" class="${sub==="use"?"on":""}">Usages IA &amp; PC</button></div>
-  ${sub==="spec"?`<table>${rows(CORE.specs)}</table>`:`<ul>${CORE.usages.map(u=>`<li><b>${u[0]}</b><span>${u[1]}</span></li>`).join("")}</ul><div class="note">${CORE.note}</div>`}</div></div>`;
+  <div class="box"><div class="st"><button data-s="spec" class="${sub==="spec"?"on":""}">Caractéristiques</button><button data-s="use" class="${sub==="use"?"on":""}">Usages IA &amp; PC</button><button data-s="llm" class="${sub==="llm"?"on":""}">LLM local</button></div>
+  ${sub==="llm"?`<p class="llmw">Le modèle dépend de la VRAM de la carte installée :</p>`+CORE_GPUS.map(g=>llmBlock(g[2],`${g[0]} · ${g[1]} VRAM`)).join("")+`<div class="note">Le lien Thunderbolt 5 ralentit surtout le chargement du modèle ; une fois en VRAM, l'impact sur la génération est limité.</div>`+LLM_FOOT:sub==="spec"?`<table>${rows(CORE.specs)}</table>`:`<ul>${CORE.usages.map(u=>`<li><b>${u[0]}</b><span>${u[1]}</span></li>`).join("")}</ul><div class="note">${CORE.note}</div>`}</div></div>`;
  }
  $("#app").innerHTML=h;
 }
