@@ -64,6 +64,8 @@ li b{display:block}li span{color:var(--m);font-size:13.5px}
 .lg{background:var(--p);border:1px solid var(--b);padding:4px 7px;border-radius:6px;cursor:pointer;line-height:0;opacity:.55}
 .lg:hover{opacity:1}
 .lg.on{border-color:var(--g);opacity:1}
+.kb{display:inline-block;margin:6px 0 2px;padding:3px 8px;border:1px solid #f5a623;color:#f5a623;border-radius:6px;font-size:12px;font-weight:700}
+.kbw{color:#f5a623}
 .card .cl{color:var(--g);font-size:12px;font-weight:600;margin-top:4px}
 .llm{background:var(--p2);border:1px solid var(--b);border-radius:10px;padding:12px 14px;margin-bottom:12px}
 .llm .tag{font-size:11px;color:var(--g);font-weight:700;letter-spacing:1px;text-transform:uppercase}
@@ -82,6 +84,7 @@ footer{margin-top:28px;color:var(--m);font-size:12px;border-top:1px solid var(--
 </header>
 <div class="tabs">
   <button class="tab on" data-v="blade">Razer Blade 16 — IA locale</button>
+  <button class="tab" data-v="blade18">Razer Blade 18 — IA locale</button>
   <button class="tab" data-v="core">Core X V2 — eGPU</button>
   <button class="tab" data-v="tb5">Dock Thunderbolt 5</button>
   <button class="tab" data-v="usb4">Dock USB 4</button>
@@ -111,6 +114,23 @@ const BLADES=[
  tagline:"La station IA portable la plus complète.",
  usages:[["LLM locaux jusqu'à ~30B + gros contextes","24 Go de VRAM et 64 Go de RAM : modèles larges avec contexte étendu."],["Station IA nomade complète","Dev, inférence, génération image/vidéo et rendu sur une seule machine."],["Démonstrations clients","Poste de démo IA locale confidentielle, sans dépendance cloud."],["Création professionnelle","3D, vidéo, VFX avec 2 To de stockage."]],
  note:"Pour les profils qui ne veulent aucun compromis : GPU, RAM et stockage au maximum de la gamme."}
+];
+const BLADES18=[
+{id:0,ean:"8887910017128",ref:"RZ09-05828ER3-R3E1",gpu:"RTX 5080",vram:16,ram:32,ssd:1,price:"4 699,99 €",tag:"Grand écran IA",
+ tagline:"L'écran 18\" pour l'IA locale et la création.",
+ usages:[["LLM locaux jusqu'à ~20B","Assistants, chat, résumé de documents dans les 16 Go de VRAM."],["Création sur grand écran","Écran 18\" UHD+ pour le montage, la 3D et la génération d'images."],["Poste fixe nomade","Thunderbolt 5, HDMI 2.1 et Ethernet 2,5 Gb pour se brancher au bureau."]],
+ note:"Clavier US QWERTY : à valider avec le client avant commande.",
+ en:{tag:"Large-screen AI",tagline:"The 18\" screen for local AI and creation.",usages:[["Local LLMs up to ~20B","Assistants, chat, document summarization within 16 GB of VRAM."],["Big-screen creation","18\" UHD+ display for editing, 3D and image generation."],["Mobile desktop replacement","Thunderbolt 5, HDMI 2.1 and 2.5 Gb Ethernet to dock at the office."]],note:"US QWERTY keyboard: confirm with the customer before ordering."}},
+{id:1,ean:"8887910017180",ref:"RZ09-05829ER4-R3E1",gpu:"RTX 5090",vram:24,ram:32,ssd:2,price:"5 699,99 €",tag:"Puissance GPU",
+ tagline:"RTX 5090 175 W et 24 Go de VRAM sur 18\".",
+ usages:[["LLM locaux jusqu'à ~35B","Modèles plus grands en 4 bits grâce aux 24 Go de VRAM."],["Génération image &amp; vidéo IA","Marge pour les modèles lourds et les hautes résolutions."],["Bibliothèque de modèles","2 To de SSD pour stocker modèles et datasets."]],
+ note:"Clavier US QWERTY : à valider avec le client avant commande.",
+ en:{tag:"GPU power",tagline:"175 W RTX 5090 and 24 GB of VRAM on 18\".",usages:[["Local LLMs up to ~35B","Larger 4-bit models thanks to 24 GB of VRAM."],["AI image &amp; video generation","Headroom for heavy models and high resolutions."],["Model library","2 TB SSD to store models and datasets."]],note:"US QWERTY keyboard: confirm with the customer before ordering."}},
+{id:2,ean:"8887910017241",ref:"RZ09-0582DER9-R3E1",gpu:"RTX 5090",vram:24,ram:64,ssd:2,price:"6 599,99 €",tag:"Top de gamme",
+ tagline:"La station IA portable 18\" la plus complète.",
+ usages:[["LLM locaux jusqu'à ~35B + gros contextes","24 Go de VRAM et 64 Go de RAM : modèles larges avec contexte étendu."],["Station IA complète","Dev, inférence, génération image/vidéo et rendu sur une seule machine."],["Démonstrations clients","Poste de démo IA locale confidentielle sur grand écran."]],
+ note:"Clavier US QWERTY : à valider avec le client avant commande.",
+ en:{tag:"Top of the range",tagline:"The most complete 18\" portable AI workstation.",usages:[["Local LLMs up to ~35B + large contexts","24 GB of VRAM and 64 GB of RAM: large models with extended context."],["Complete AI workstation","Dev, inference, image/video generation and rendering on a single machine."],["Customer demos","Confidential local-AI demo station on a large screen."]],note:"US QWERTY keyboard: confirm with the customer before ordering."}}
 ];
 const CORE={
  name:"Razer Core X V2",sub:"Boîtier eGPU Thunderbolt 5",
@@ -177,11 +197,11 @@ const T=(fr,en)=>lang==="en"?en:fr;
 const X=o=>(lang==="en"&&o.en)?Object.assign({},o,o.en):o;
 const $$=s=>lang==="en"?"€"+s.replace(/\s?€/,"").replace(/\s/g,",").replace(/,(\d{2})$/,".$1"):s;
 const STAT={
- fr:{h1:"<span>RAZER</span> pour l'IA",sub1:"Razer Blade 16 (2026), Core X V2 &amp; accessoires",sub2:"Cliquez sur une référence pour afficher le détail",title:"Razer Blade 16, Core X V2 & accessoires — Solutions IA",
-  tabs:{blade:"Razer Blade 16 — IA locale",core:"Core X V2 — eGPU",tb5:"Dock Thunderbolt 5",usb4:"Dock USB 4",usbc:"Dock USB-C",cool:"Cooling Pad"},
+ fr:{h1:"<span>RAZER</span> pour l'IA",sub1:"Razer Blade 16 &amp; 18 (2026), Core X V2 &amp; accessoires",sub2:"Cliquez sur une référence pour afficher le détail",title:"Razer Blade 16 & 18, Core X V2 & accessoires — Solutions IA",
+  tabs:{blade:"Razer Blade 16 — IA locale",blade18:"Razer Blade 18 — IA locale",core:"Core X V2 — eGPU",tb5:"Dock Thunderbolt 5",usb4:"Dock USB 4",usbc:"Dock USB-C",cool:"Cooling Pad"},
   foot:"Spécifications : fiches Razer France (razer.com/fr-fr) et fiches revendeurs. Prix publics indiqués par Razer EMEA. Les capacités IA (tailles de modèles) sont des ordres de grandeur en quantification 4 bits, à valider selon l'outil et le modèle utilisés. Photos non contractuelles."},
- en:{h1:"<span>RAZER</span> for AI",sub1:"Razer Blade 16 (2026), Core X V2 &amp; accessories",sub2:"Click a reference to see the details",title:"Razer Blade 16, Core X V2 & accessories — AI Solutions",
-  tabs:{blade:"Razer Blade 16 — Local AI",core:"Core X V2 — eGPU",tb5:"Thunderbolt 5 Dock",usb4:"USB 4 Dock",usbc:"USB-C Dock",cool:"Cooling Pad"},
+ en:{h1:"<span>RAZER</span> for AI",sub1:"Razer Blade 16 &amp; 18 (2026), Core X V2 &amp; accessories",sub2:"Click a reference to see the details",title:"Razer Blade 16 & 18, Core X V2 & accessories — AI Solutions",
+  tabs:{blade:"Razer Blade 16 — Local AI",blade18:"Razer Blade 18 — Local AI",core:"Core X V2 — eGPU",tb5:"Thunderbolt 5 Dock",usb4:"USB 4 Dock",usbc:"USB-C Dock",cool:"Cooling Pad"},
   foot:"Specifications: Razer France product pages (razer.com/fr-fr) and reseller listings. Public prices as indicated by Razer EMEA. AI capacities (model sizes) are orders of magnitude at 4-bit quantization, to be validated according to the tool and model used. Photos not contractual."}};
 function applyStatic(){
  const S=STAT[lang];document.documentElement.lang=lang;document.title=S.title;
@@ -189,8 +209,14 @@ function applyStatic(){
  document.querySelectorAll(".tab").forEach(t=>t.textContent=S.tabs[t.dataset.v]);
  document.querySelectorAll(".lg").forEach(b=>b.classList.toggle("on",b.dataset.l===lang));
 }
+const LAPTOPS={
+ blade:{name:"Razer Blade 16",list:BLADES,img:()=>IMG.blade,kb:null,
+  specs:(b,GB)=>[[T("Référence","Reference"),b.ref],["EAN",b.ean],[T("Processeur","Processor"),T("Intel Core Ultra 9 386H (16 cœurs)","Intel Core Ultra 9 386H (16 cores)")],["NPU",T("Jusqu'à 50 TOPS","Up to 50 TOPS")],[T("Carte graphique","Graphics card"),`NVIDIA GeForce ${b.gpu} Laptop — ${b.vram} ${GB} GDDR7 (165 W TGP)`],[T("Mémoire","Memory"),T(`${b.ram} Go LPDDR5X 9 600 MHz (soudée)`,`${b.ram} GB LPDDR5X 9,600 MHz (soldered)`)],[T("Stockage","Storage"),T(`SSD ${b.ssd} To`,`${b.ssd} TB SSD`)],[T("Écran","Display"),T("16\" OLED QHD+ 2560×1600, 240 Hz, 0,2 ms, DisplayHDR True Black 1000","16\" OLED QHD+ 2560×1600, 240 Hz, 0.2 ms, DisplayHDR True Black 1000")],[T("Luminosité","Brightness"),T("500 nits SDR / jusqu'à 1 100 nits HDR","500 nits SDR / up to 1,100 nits HDR")],["Ports",T("Thunderbolt 5 et Thunderbolt 4","Thunderbolt 5 and Thunderbolt 4")],["Audio",T("6 haut-parleurs, THX Spatial Audio+","6 speakers, THX Spatial Audio+")],[T("Autonomie","Battery life"),T("Jusqu'à 13 h (bureautique)","Up to 13 h (office use)")],[T("Poids / épaisseur","Weight / thickness"),T("2,1 kg / 14,9 mm","2.1 kg / 14.9 mm")],[T("Système","Operating system"),T("Windows 11 Famille","Windows 11 Home")]]},
+ blade18:{name:"Razer Blade 18",list:BLADES18,img:()=>null,kb:["Clavier US QWERTY","US QWERTY keyboard"],
+  specs:(b,GB)=>[[T("Référence","Reference"),b.ref],["EAN",b.ean],[T("Clavier","Keyboard"),`<b class="kbw">${T("US QWERTY","US QWERTY")}</b>`],[T("Processeur","Processor"),T("Intel Core Ultra 9 290HX Plus (24 cœurs, jusqu'à 5,5 GHz)","Intel Core Ultra 9 290HX Plus (24 cores, up to 5.5 GHz)")],["NPU",T("Jusqu'à 13 TOPS","Up to 13 TOPS")],[T("Carte graphique","Graphics card"),`NVIDIA GeForce ${b.gpu} Laptop — ${b.vram} ${GB} GDDR7${b.gpu==="RTX 5090"?" (175 W TGP)":""}`],[T("Mémoire","Memory"),`${b.ram} ${GB}`],[T("Stockage","Storage"),T(`SSD ${b.ssd} To`,`${b.ssd} TB SSD`)],[T("Écran","Display"),T("18\" double mode : UHD+ 240 Hz / FHD+ 440 Hz, jusqu'à 100 % DCI-P3","18\" dual mode: UHD+ 240 Hz / FHD+ 440 Hz, up to 100% DCI-P3")],["Ports",T("Thunderbolt 5, HDMI 2.1, Ethernet 2,5 Gb, lecteur SD UHS-II","Thunderbolt 5, HDMI 2.1, 2.5 Gb Ethernet, UHS-II SD reader")],[T("Charge USB-C","USB-C charging"),T("Jusqu'à 100 W","Up to 100 W")],[T("Sans fil","Wireless"),"Wi-Fi 7"],["Webcam",T("5 MP IR, Windows Hello, cache physique","5 MP IR, Windows Hello, privacy shutter")],["Audio",T("6 haut-parleurs, THX Spatial Audio+","6 speakers, THX Spatial Audio+")],[T("Châssis","Chassis"),T("Aluminium recyclé usiné d'un bloc, finition anodisée","Precision-milled recycled aluminium unibody, anodized finish")]]}
+};
 let view="blade",sel=0,sub="spec",vi=0;
-(function(){const p=new URLSearchParams(location.search).get("p");if(p==="core"||PRODS[p])view=p;else if(p==="tb5m"||p==="usb4m"){view=p.slice(0,-1);vi=1}else if(/^blade[0-3]$/.test(p||"")){view="blade";sel=+p.slice(5)}})();
+(function(){const p=new URLSearchParams(location.search).get("p");if(p==="core"||PRODS[p])view=p;else if(p==="tb5m"||p==="usb4m"){view=p.slice(0,-1);vi=1}else if(/^blade[0-3]$/.test(p||"")){view="blade";sel=+p.slice(5)}else if(/^blade18_[0-2]$/.test(p||"")){view="blade18";sel=+p.slice(8)}})();
 const $=s=>document.querySelector(s);
 const rows=a=>a.map(r=>`<tr><td>${r[0]}</td><td>${r[1]}</td></tr>`).join("");
 /* LLM locaux recommandés — source unique indexée par VRAM (vdf.ai 06/10/2026, computingforgeeks.com 14/11/2026) */
@@ -214,15 +240,15 @@ function render(){
  const GB=T("Go","GB"),TB=T("To","TB");
  document.querySelectorAll(".tab").forEach(t=>t.classList.toggle("on",t.dataset.v===view));
  let h="";
- if(view==="blade"){
-  h+=`<div class="cards">`+BLADES.map(X).map(b=>`<button class="card ${b.id===sel?"on":""}" data-i="${b.id}"><div class="tag">${b.tag}</div><div class="nm">${b.gpu}</div><div class="cf">${b.ram} ${GB} RAM · ${b.ssd} ${TB} SSD</div><div class="pr">${$$(b.price)}</div><div class="cl">${T("LLM : ","LLM: ")}${LLM_BY_VRAM[b.vram].best[0]}</div><div class="rf">${b.ref}</div></button>`).join("")+`</div>`;
-  const b=X(BLADES[sel]);
-  const specs=[[T("Référence","Reference"),b.ref],["EAN",b.ean],[T("Processeur","Processor"),T("Intel Core Ultra 9 386H (16 cœurs)","Intel Core Ultra 9 386H (16 cores)")],["NPU",T("Jusqu'à 50 TOPS","Up to 50 TOPS")],[T("Carte graphique","Graphics card"),`NVIDIA GeForce ${b.gpu} Laptop — ${b.vram} ${GB} GDDR7 (165 W TGP)`],[T("Mémoire","Memory"),T(`${b.ram} Go LPDDR5X 9 600 MHz (soudée)`,`${b.ram} GB LPDDR5X 9,600 MHz (soldered)`)],[T("Stockage","Storage"),T(`SSD ${b.ssd} To`,`${b.ssd} TB SSD`)],[T("Écran","Display"),T("16\" OLED QHD+ 2560×1600, 240 Hz, 0,2 ms, DisplayHDR True Black 1000","16\" OLED QHD+ 2560×1600, 240 Hz, 0.2 ms, DisplayHDR True Black 1000")],[T("Luminosité","Brightness"),T("500 nits SDR / jusqu'à 1 100 nits HDR","500 nits SDR / up to 1,100 nits HDR")],["Ports",T("Thunderbolt 5 et Thunderbolt 4","Thunderbolt 5 and Thunderbolt 4")],["Audio",T("6 haut-parleurs, THX Spatial Audio+","6 speakers, THX Spatial Audio+")],[T("Autonomie","Battery life"),T("Jusqu'à 13 h (bureautique)","Up to 13 h (office use)")],[T("Poids / épaisseur","Weight / thickness"),T("2,1 kg / 14,9 mm","2.1 kg / 14.9 mm")],[T("Système","Operating system"),T("Windows 11 Famille","Windows 11 Home")]];
-  h+=`<div class="detail"><div class="box"><div class="imgbox"><img src="${IMG.blade}" alt="Razer Blade 16"></div><h2>Razer Blade 16 — ${b.gpu}</h2><div class="ref">${b.ref} · ${b.ram} ${GB} · ${b.ssd} ${TB}</div><div class="price">${$$(b.price)}</div>
+ if(LAPTOPS[view]){
+  const M=LAPTOPS[view],kb=M.kb?`<div class="kb">⌨ ${L(M.kb)}</div>`:"",img=M.img();
+  h+=`<div class="cards">`+M.list.map(X).map(b=>`<button class="card ${b.id===sel?"on":""}" data-i="${b.id}"><div class="tag">${b.tag}</div><div class="nm">${b.gpu}</div><div class="cf">${b.ram} ${GB} RAM · ${b.ssd} ${TB} SSD</div><div class="pr">${$$(b.price)}</div><div class="cl">${T("LLM : ","LLM: ")}${LLM_BY_VRAM[b.vram].best[0]}</div>${kb}<div class="rf">${b.ref}</div></button>`).join("")+`</div>`;
+  const b=X(M.list[sel]);
+  h+=`<div class="detail"><div class="box">${img?`<div class="imgbox"><img src="${img}" alt="${M.name}"></div>`:""}<h2>${M.name} — ${b.gpu}</h2><div class="ref">${b.ref} · ${b.ram} ${GB} · ${b.ssd} ${TB}</div>${kb}<div class="price">${$$(b.price)}</div>
   <div class="kpis"><div class="kpi"><b>${b.vram} ${GB}</b><small>${T("VRAM GPU","GPU VRAM")}</small></div><div class="kpi"><b>${b.ram} ${GB}</b><small>RAM</small></div><div class="kpi"><b>${b.ssd} ${TB}</b><small>SSD</small></div></div>
   <div class="bars">${bar("VRAM",b.vram,24,GB)}${bar("RAM",b.ram,64,GB)}${bar("SSD",b.ssd,2,TB)}</div></div>
   <div class="box"><div class="st"><button data-s="spec" class="${sub==="spec"?"on":""}">${T("Caractéristiques","Specifications")}</button><button data-s="use" class="${sub==="use"?"on":""}">${T("Usages IA &amp; PC","AI &amp; PC use cases")}</button>${llmBtn()}</div>
-  ${sub==="llm"?llmBlock(b.vram,T(`Modèle optimal · ${b.vram} Go VRAM`,`Best model · ${b.vram} GB VRAM`))+`<div class="note">${L(RAM_NOTE[b.ram])}</div>`+llmFoot():sub==="spec"?`<table>${rows(specs)}</table>`:`<p style="margin-bottom:8px;color:var(--m)">${b.tagline}</p><ul>${b.usages.map(u=>`<li><b>${u[0]}</b><span>${u[1]}</span></li>`).join("")}</ul><div class="note">${b.note}</div>`}</div></div>`;
+  ${sub==="llm"?llmBlock(b.vram,T(`Modèle optimal · ${b.vram} Go VRAM`,`Best model · ${b.vram} GB VRAM`))+`<div class="note">${L(RAM_NOTE[b.ram])}</div>`+llmFoot():sub==="spec"?`<table>${rows(M.specs(b,GB))}</table>`:`<p style="margin-bottom:8px;color:var(--m)">${b.tagline}</p><ul>${b.usages.map(u=>`<li><b>${u[0]}</b><span>${u[1]}</span></li>`).join("")}</ul><div class="note">${b.note}</div>`}</div></div>`;
  } else if(PRODS[view]){
   const P=X(PRODS[view]),V=curV();
   const vars=P.alt?`<div class="vars">`+[{label:P.base,ref:P.ref,img:P.img},P.alt].map((x,i)=>`<button class="vp ${i===vi?"on":""}" data-vi="${i}"><img src="${x.img}" alt="${x.label}" referrerpolicy="no-referrer"><span>${x.label}<small>${x.ref}</small></span></button>`).join("")+`</div>`:"";
@@ -244,7 +270,7 @@ function curV(){const P=X(PRODS[view]);return(vi===1&&P.alt)?{label:P.alt.label,
 const CONTACT="manuel.vazquez@razer.com";
 const SRC=new URLSearchParams(location.search).get("src")||"direct";
 function renderCta(){
- const lbl=view==="blade"?"Razer Blade 16 "+BLADES[sel].gpu+" "+BLADES[sel].ram+" "+T("Go","GB")+" ("+BLADES[sel].ref+")":PRODS[view]?PRODS[view].name+(PRODS[view].alt?" "+curV().label:"")+" ("+curV().ref+")":"Razer Core X V2";
+ const LM=LAPTOPS[view],lbl=LM?LM.name+" "+LM.list[sel].gpu+" "+LM.list[sel].ram+" "+T("Go","GB")+" ("+LM.list[sel].ref+")"+(LM.kb?" — "+L(LM.kb):""):PRODS[view]?PRODS[view].name+(PRODS[view].alt?" "+curV().label:"")+" ("+curV().ref+")":"Razer Core X V2";
  const subj=encodeURIComponent(T("Demande de devis / démo — ","Quote / demo request — ")+lbl);
  const body=encodeURIComponent(T("Bonjour,\n\nJe souhaite recevoir un devis ou une démonstration pour : "+lbl+".\n\nSociété :\nQuantité estimée :\nTéléphone :\n\n(source : "+SRC+")","Hello,\n\nI would like to receive a quote or a demonstration for: "+lbl+".\n\nCompany:\nEstimated quantity:\nPhone:\n\n(source: "+SRC+")"));
  $("#cta").innerHTML=`<p><b>${lbl}</b><br>${T("Devis, tarif revendeur ou démonstration : réponse directe de Razer EMEA.","Quote, reseller pricing or demonstration: direct reply from Razer EMEA.")}</p><a href="mailto:${CONTACT}?subject=${subj}&body=${body}">${T("Demander un devis / une démo","Request a quote / demo")}</a>`;
@@ -253,7 +279,7 @@ document.addEventListener("click",e=>{
  const t=e.target.closest(".tab,.card,.st button,.vp,.lg");if(!t)return;
  if(t.classList.contains("lg")){lang=t.dataset.l;try{const u=new URL(location.href);u.searchParams.set("lang",lang);history.replaceState(null,"",u)}catch(_){}applyStatic()}
  else if(t.classList.contains("vp"))vi=+t.dataset.vi;
- else if(t.classList.contains("tab")){view=t.dataset.v;sub="spec";vi=0}
+ else if(t.classList.contains("tab")){view=t.dataset.v;sub="spec";vi=0;if(LAPTOPS[view]&&sel>=LAPTOPS[view].list.length)sel=0}
  else if(t.classList.contains("card"))sel=+t.dataset.i;
  else sub=t.dataset.s;
  render();
